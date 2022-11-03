@@ -1,23 +1,41 @@
 import logo from './logo.svg';
 import './App.css';
 
+
+import { useEffect,useState } from 'react';
+import { clientId, Login } from './Auth/Login';
+import Logout from './Auth/Logout';
+import {gapi} from 'gapi-script';
+import GoogleLogin from 'react-google-login';
+
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+
+
+  const [ profile, setProfile ] = useState([]);
+
+  const onSuccess = (res) =>{
+    setProfile(res.profileObj);
+  }
+
+  const onLogOutSuccess = (res) =>{
+    setProfile(null);
+  }
+
+  useEffect( ()=> {
+    function start() {
+      gapi.client.init({
+        clientId: clientId,
+        scope:""      
+    })
+  };
+
+  gapi.load('client:auth2',start);
+
+});
+
+return (
+    <div>
+      { profile ?  <Logout onLogSuccess={onLogOutSuccess}/> : <Login onSuccess={onSuccess}/>}
     </div>
   );
 }
